@@ -44,12 +44,23 @@ Roadmap:
 
 ### Local Development
 
-1. Install and update [Docker for Mac](https://docs.docker.com/docker-for-mac/install/).
+/Quick Start:
 
-2. Build the web server and run it locally:
+1. Install and update the stable version of [Docker for Mac](https://docs.docker.com/docker-for-mac/install/).
+   You need to run Docker locally, but you do not need to create an account/sign-in.
+
+2. Create your local database. The database name that this little service assumes is little_service_db.
+
+3. If you don't already have Redis, install Redis.
+
+4. Build the web server and run it locally:
 ```
 docker-compose build && docker-compose run --service-ports web
 ```
+
+5. Go to http://127.0.0.1:90/ - You should see the number under "Hello, World" increment with every refresh.
+
+/Quick Start End.
 
 Code changes will automatically trigger Django's server restart.
 
