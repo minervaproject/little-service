@@ -1,0 +1,40 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/scheduler
+    docker:
+      - image: python:2
+      - image: mysql:latest
+        environment:
+        - MYSQL_ALLOW_EMPTY_PASSWORD: yes
+        - MYSQL_DATABASE: scheduler_db
+
+    steps:
+      - checkout
+      - restore_cache:
+          key: venv-{{ checksum "requirements.in" }}
+      - run:
+          name: install dependencies
+          command: |
+            echo "Creating virtualenv..."
+            virtualenv venv
+            source venv/bin/activate
+            echo "Installing dependencies..."
+            pip install pip-tools
+            pip-compile --output-file requirements.txt requirements.in
+            pip-sync requirements.txt
+      - save_cache:
+          key: venv-{{ checksum "requirements.in" }}
+          paths:
+            - venv
+      - run:
+          name: run tests
+          command: |
+            source venv/bin/activate
+            # TODO: Use dockerize or similar to wait for DB readiness.
+            sleep 5
+            DJANGO_SETTINGS_MODULE=scheduler_service.environments.ci python scheduler_service/manage.py migrate
+            DJANGO_SETTINGS_MODULE=scheduler_service.environments.ci python scheduler_service/manage.py test scheduler
+      - store_artifacts:
+          path: test-reports/
+          destination: tr1

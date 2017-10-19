@@ -1,0 +1,11 @@
+# Basic Django on MySQL
+Django==1.11
+MySQL-python==1.2.5
+
+# Async tasks
+celery==4.1.0
+redis==2.10.6
+
+# Shell, ipdb
+django-extensions==1.9.1
+ipdb==0.7
