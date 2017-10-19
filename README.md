@@ -36,6 +36,18 @@ Roadmap
 ### Circle
 Circle 2.0 makes use of Docker containers, so one Python and one MySQL container is specified in `.circleci/config.yml`. Both containers cache dependencies based on changes to `requirements.in` for Django, and save them to `venv`. Then a migration is run on a fresh database, followed by unit tests. All of the dependency setup and entrypoint scripting is done within the Circle configuration file, which needs to be kept parallel with the local and production (if any) scripts.
 
+Adding project to CircleCI
+
+1. Go to CircleCI, click on "Projects" in the sidebar.
+
+2. Click "Add Projects"
+
+3. You should see the new repo in the list - this is based on Github. There should be a "Setup Project" button next to it. Click the button.
+
+4. Default OS is Linux, platform is 2.0, language is Python. Make these selections and click "Start building" at the bottom of the page.
+
+5. Then you should see your dummy unit test pass.
+
 Roadmap:
 - [ ] Container for Celery/Redis to test scheduled/delayed tasks.
 - [ ] Smarter healthcheck to wait for database readiness.
