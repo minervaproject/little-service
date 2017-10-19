@@ -7,7 +7,7 @@ jobs:
       - image: mysql:latest
         environment:
         - MYSQL_ALLOW_EMPTY_PASSWORD: yes
-        - MYSQL_DATABASE: scheduler_db
+        - MYSQL_DATABASE: little_service_db
 
     steps:
       - checkout

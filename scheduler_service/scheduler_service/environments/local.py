@@ -5,7 +5,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'HOST': 'docker.for.mac.localhost',
         'PORT': '3306',
-        'NAME': 'scheduler_db',
+        'NAME': 'little_service_db',
         'USER': 'root',
         'PASSWORD': '',
     }
