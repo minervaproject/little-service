@@ -27,6 +27,87 @@ Roadmap
 
 The build process uses Amazon CodeBuild, which takes the specs in `buildspec.yml` and builds a single webserver Docker image and registers it with Amazon ElasticContainerRegistry, which in theory should allow it to be deployable.
 
+1. Go to AWS, and go to AWS CodePipeline.
+
+2. Click "create pipeline"
+
+3. Call the pipeline the name of your project.
+
+4. Select Github as the source on the next page.
+
+5. It will allow you to connect to Github and choose your repository and branch.
+
+6. On the next page, select "AWS CodeBuild" as your Build provider.
+
+7. Configure your project. Select "Create a new build", use your project name.
+
+8. Environment/how to build. Select "Use an image managed by AWS CodeBuild", Operating System "Ubuntu", Runtime "Docker", Version "aws/codebuilder/docker:1.12.1", Build specification "Use the buildspec.yml in the source code root directory".
+
+9. AWS CodeBuild service role should be "Create a service role in your account". Name role name whatever you want.
+
+10. Under Advanced, it's really important to check "Privileged - Enable this flag if you want to build Docker images or want your builds to get elevated privileges". You probably don't need to change timeout. Compute type may vary depending on the project.
+
+THEN, DO NOT SAVE BUILD PROJECT. GO TO A SEPARATE TAB.
+
+11. Go to EC2 Container service.
+
+12. Click "Create repository" button. Name your repo the name of your project.
+
+13. Click done.
+
+14. Now you should see the repo ARN and URI. This is where the Docker images go.
+
+The URI will look something like this:
+579419983247.dkr.ecr.us-west-2.amazonaws.com/little-service
+
+NOW, GO BACK TO PREVIOUS TAB.
+
+15. Add following environment variables according to your URI:
+name                value             type
+IMAGE_REPO_NAME     little-service    plaintext
+AWS_ACCOUNT_ID      579419983247      plaintext
+IMAGE_TAG           latest            plaintext     // this is not from the URI, just default
+AWS_DEFAULT_REGION  us-west-2         plaintext
+
+16. Now we can save the build project! After it's saved, we can do "Next Step."
+
+17. Deploy <Note: we skipped this initially, and came back to it after step 21 and did the following.>
+
+  17.a. Go to Elastic Beanstalk
+  17.b. Top right, it says Create new application, create one for your project.
+  17.c. Create an environment for your new application.
+  17.d. Choose Web server environment.
+  17.e. Environment name ex: "little-service-production", domain name whatever your project is ex: "little-service".
+  17.f. Platform is "preconfigured platform", "Docker."
+  17.g. "Sample application" is fine.
+  17.h. Then do "Configure more options."
+  17.i. "Low cost" is fine.
+  17.j. Create environment.
+  17.k. You should be at All Applications > little-service > little-service-production. And now it does something. It will take forever.
+  17.l. Now you should see a dashboard with an Environment ID and a URL. If you go to the URL, you should see a template AWS page. ex. little-service.us-west-2.elasticbeanstalk.com
+  17.m. Go to config and create an RDS instance.
+
+  17.n. When you're done, go back to AWS CodePipeline, and under Source and Build add stage "Deploy". Add an action with Action category "Deploy" and name "deploy". Deployment provider is ElasticBeanstalk. Choose your service from the dropdowns. Input artifacts should be "MyAppBuild." Add action, save pipeline.
+  Then release change and see what happens.
+
+18. AWS Service Role: there should be a default one (AWS-CodePipeline-Service). If not, I'm sorry.
+
+19. Review all the things. Create pipeline.
+
+20. To test it, click "Release Change." And now we wait.
+(If you want to look at the progress, you can go to CodeBuild and select your project. And then click on the thing under Build Run.)
+
+21. If you get the error:
+
+MessageError while executing command: $(aws ecr get-login --region $AWS_DEFAULT_REGION). Reason: exit status 255
+
+Go to IAM, and find your thing under Roles (for us, this is code-build-little-service-service-role). Do attach policy, check:
+AmazonEC2ContainerRegistryPowerUser
+
+Note: Retrying from the CodeBuild dashboard does not work. Go do "Release change" again.
+
+
+
 Roadmap
 - [ ] Production environment with MySQL, Redis, Celery workers.
 - [ ] Deployment scripts.
