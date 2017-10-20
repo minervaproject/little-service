@@ -1,13 +1,14 @@
-# Scheduler service
+# Little Service
 
-The goals of this project is to 1) create a standalone scheduler service that solves a product need of iteratively generating and verifying schedules, can be used with minimal engineering intervention, and 2) exploring the possibility of a templated base service infrastructure for ALF projects.
+A templated base service infrastructure for ALF projects.
 
 For such a template to be useful, it necessarily has to share many of the technologies already used by ALF in picasso, and include features for a developer to easily and confidently start a production-ready service:
 - Django 1.11 / Python 2.7
     - Strong patterns for API endpoints, both reading and writing, as well as permissions, may be needed here. It's unclear whether DRF should be standard.
-- Build and Deploy (TBD)
+    - TODO: We may want to discuss starting with Python 3.
+- Build and Deploy
 - Circle / Testing
-- Local Development
+- Local Development Process
 - Monitoring / Alerts (TBD)
 - Logging (TBD)
 
@@ -22,14 +23,18 @@ The application code itself is in a folder within, called `application`, as in `
 Roadmap
 - [ ] Static asset deployment strategy.
 - [ ] Per-application URL routing.
+- [ ] Celery/Redis within applications.
+- [ ] API / login auth
 
 ### Build and Deploy
 
-The build process uses Amazon CodeBuild, which takes the specs in `buildspec.yml` and builds a single webserver Docker image and registers it with Amazon ElasticContainerRegistry, which in theory should allow it to be deployable.
+The build process uses Amazon CodeBuild, which takes the specs in `buildspec.yml` and builds a single web server Docker image and registers it with Amazon ElasticContainerRegistry. In the future, we may want some kind of multi-container configuration.
+
+AWS steps, which we hope to be able to write into a CLI script someday:
 
 1. Go to AWS, and go to AWS CodePipeline.
 
-2. Click "create pipeline"
+2. Click "Create pipeline"
 
 3. Call the pipeline the name of your project.
 
@@ -106,8 +111,6 @@ AmazonEC2ContainerRegistryPowerUser
 
 Note: Retrying from the CodeBuild dashboard does not work. Go do "Release change" again.
 
-
-
 Roadmap
 - [ ] Production environment with MySQL, Redis, Celery workers.
 - [ ] Deployment scripts.
@@ -174,3 +177,4 @@ Roadmap:
 - [ ] Smarter healthcheck to wait for database readiness.
 - [ ] Integration tests.
 - [ ] Figure out Unicode support for database.
+- [ ] Django Admin
