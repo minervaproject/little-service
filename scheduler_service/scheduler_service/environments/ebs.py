@@ -11,6 +11,6 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ['minerva-scheduler-production.us-west-2.elasticbeanstalk.com']
+ALLOWED_HOSTS = ['little-service.us-west-2.elasticbeanstalk.com']
 
 DEBUG = False
