@@ -13,4 +13,4 @@ DATABASES = {
 
 ALLOWED_HOSTS = ['little-service.us-west-2.elasticbeanstalk.com']
 
-DEBUG = False
+DEBUG = True
