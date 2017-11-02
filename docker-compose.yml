@@ -6,6 +6,6 @@ services:
       context: .
       dockerfile: "Dockerfile.local"
     volumes:
-      - .:/scheduler
+      - .:/little_service
     ports:
       - "90:80"

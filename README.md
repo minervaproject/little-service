@@ -63,13 +63,13 @@ THEN, DO NOT SAVE BUILD PROJECT. GO TO A SEPARATE TAB.
 14. Now you should see the repo ARN and URI. This is where the Docker images go.
 
 The URI will look something like this:
-579419983247.dkr.ecr.us-west-2.amazonaws.com/little-service
+579419983247.dkr.ecr.us-west-2.amazonaws.com/little_service
 
 NOW, GO BACK TO PREVIOUS TAB.
 
 15. Add following environment variables according to your URI:
 name                value             type
-IMAGE_REPO_NAME     little-service    plaintext
+IMAGE_REPO_NAME     little_service    plaintext
 AWS_ACCOUNT_ID      579419983247      plaintext
 IMAGE_TAG           latest            plaintext     // this is not from the URI, just default
 AWS_DEFAULT_REGION  us-west-2         plaintext
@@ -82,14 +82,14 @@ AWS_DEFAULT_REGION  us-west-2         plaintext
   17.b. Top right, it says Create new application, create one for your project.
   17.c. Create an environment for your new application.
   17.d. Choose Web server environment.
-  17.e. Environment name ex: "little-service-production", domain name whatever your project is ex: "little-service".
+  17.e. Environment name ex: "little_service-production", domain name whatever your project is ex: "little_service".
   17.f. Platform is "preconfigured platform", "Docker."
   17.g. "Sample application" is fine.
   17.h. Then do "Configure more options."
   17.i. "Low cost" is fine.
   17.j. Create environment.
-  17.k. You should be at All Applications > little-service > little-service-production. And now it does something. It will take forever.
-  17.l. Now you should see a dashboard with an Environment ID and a URL. If you go to the URL, you should see a template AWS page. ex. little-service.us-west-2.elasticbeanstalk.com
+  17.k. You should be at All Applications > little_service > little_service-production. And now it does something. It will take forever.
+  17.l. Now you should see a dashboard with an Environment ID and a URL. If you go to the URL, you should see a template AWS page. ex. little_service.us-west-2.elasticbeanstalk.com
   17.m. Go to config and create an RDS instance.
 
   17.n. When you're done, go back to AWS CodePipeline, and under Source and Build add stage "Deploy". Add an action with Action category "Deploy" and name "deploy". Deployment provider is ElasticBeanstalk. Choose your service from the dropdowns. Input artifacts should be "MyAppBuild." Add action, save pipeline.
@@ -106,7 +106,7 @@ AWS_DEFAULT_REGION  us-west-2         plaintext
 
 MessageError while executing command: $(aws ecr get-login --region $AWS_DEFAULT_REGION). Reason: exit status 255
 
-Go to IAM, and find your thing under Roles (for us, this is code-build-little-service-service-role). Do attach policy, check:
+Go to IAM, and find your thing under Roles (for us, this is code-build-little_service-service-role). Do attach policy, check:
 AmazonEC2ContainerRegistryPowerUser
 
 Note: Retrying from the CodeBuild dashboard does not work. Go do "Release change" again.

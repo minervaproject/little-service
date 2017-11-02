@@ -1,12 +1,14 @@
-from scheduler_service.settings import *
+from little_service.settings import *
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': '127.0.0.1',
+        'HOST': 'docker.for.mac.localhost',
         'PORT': '3306',
         'NAME': 'little_service_db',
         'USER': 'root',
         'PASSWORD': '',
     }
 }
+
+ALLOWED_HOSTS = ['127.0.0.1']

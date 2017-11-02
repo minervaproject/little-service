@@ -1,4 +1,4 @@
-from scheduler_service.settings import *
+from little_service.settings import *
 
 DATABASES = {
     'default': {
@@ -11,6 +11,6 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ['little-service.us-west-2.elasticbeanstalk.com']
+ALLOWED_HOSTS = ['little_service.us-west-2.elasticbeanstalk.com']
 
 DEBUG = True

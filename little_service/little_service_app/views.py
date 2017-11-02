@@ -5,7 +5,7 @@ import json
 from celery import shared_task
 from django.http import HttpResponse
 from django.views.generic import TemplateView
-from scheduler.models import Counter
+from little_service_app.models import Counter
 
 
 class IndexView(TemplateView):
@@ -20,7 +20,7 @@ class IndexView(TemplateView):
         return { "count": counter.count }
 
 
-# TODO: TEST CELERY OR SOMETHING
+# TODO: TEST CELERY
 # @shared_task
 # def run_scheduler(*args):
 #     scheduler = SchedulerService(use_cache=True)

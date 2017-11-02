@@ -1,7 +1,7 @@
 FROM python:2
-RUN mkdir /scheduler
-WORKDIR /scheduler
-ADD requirements.in /scheduler
+RUN mkdir /little_service
+WORKDIR /little_service
+ADD requirements.in /little_service
 RUN /bin/bash -c 'virtualenv /venv  && \
     source /venv/bin/activate  && \
     echo "Installing dependencies..."  && \
@@ -11,5 +11,5 @@ RUN /bin/bash -c 'virtualenv /venv  && \
 
 EXPOSE 80
 
-ADD docker-entrypoint-local.sh /scheduler
+ADD docker-entrypoint-local.sh /little_service
 ENTRYPOINT ["./docker-entrypoint-local.sh"]

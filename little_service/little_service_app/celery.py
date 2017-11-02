@@ -3,9 +3,9 @@ import os
 from celery import Celery
 
 # set the default Django settings module for the 'celery' program.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'scheduler_service.environments.local')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'little_service.environments.local')
 
-app = Celery('scheduler')
+app = Celery('little_service')
 
 # Using a string here means the worker doesn't have to serialize
 # the configuration object to child processes.
@@ -16,6 +16,7 @@ app = Celery('scheduler')
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks()
 
+# TODO: This only works locally on Mac
 app.conf.broker_url = 'redis://docker.for.mac.localhost:6379/0'
 
 @app.task(bind=True)
