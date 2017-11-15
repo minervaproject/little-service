@@ -1,31 +1,38 @@
 # Building a Reusable Little Service
 ## Django/Celery on Docker, CodePipeline, Elastic Beanstalk, with an RDS database.
 
+
 ### Motivation
 
 [Image of classroom]
 
-Minerva's Active Learning Forum (ALF) started as just an online dashboard and virtual classroom. As Minerva grew, so did the requirements for this platform, storing more types of data and providing more features and views. Originally a full-stack web application with Backbone (link) and Marionette.js (link) on a Django (link) back-end, the monolithic codebase (internally named `picasso`) now hosts over a dozen Django apps (https://docs.djangoproject.com/en/1.11/ref/applications/), scores of models, a full suite of tests that require half an hour or more to run, and nearly a hundred shared dependencies for the back-end alone. To improve development, testing, and deployment speed, as well as reduce cognitive overhead, the ALF team decided to move toward a service-oriented architecture (SOA) that interacted through clearly defined, ideally RESTful (link), APIs. We have already seen great success with running Licode (link), our A/V system, as a service, and more recently with refactoring "ClassGrader", where faculty grade student-submitted assignments, as a React webapp.
+Minerva's Active Learning Forum (ALF) started as just an online dashboard and virtual classroom. As Minerva grew, so did the requirements for this platform, storing more types of data and providing more features and views. Originally a full-stack web application with [Backbone](http://backbonejs.org/) and [Marionette.js](https://marionettejs.com/) on a [Django](https://www.djangoproject.com/) back-end, the monolithic codebase (internally named `picasso`) now hosts over a dozen [Django apps](https://docs.djangoproject.com/en/1.11/ref/applications/), scores of models, a full suite of tests that require half an hour or more to run, and nearly a hundred shared dependencies for the back-end alone.
+
+To improve development, testing, and deployment speed, as well as reduce cognitive overhead, the ALF team decided to move toward a service-oriented architecture (SOA) that interacted through clearly defined, ideally [RESTful](https://en.wikipedia.org/wiki/Representational_state_transfer), APIs. We have already seen great success with running [Licode](http://lynckia.com/licode/), our A/V system, as a service, and more recently with refactoring "ClassGrader", where faculty grade student-submitted assignments, as a React webapp.
+
 
 ### Requirement definition
 
-The first step we made towards an SOA was a brainstorm session with three ALF engineers. First, we listed ALF's dependencies that were already considered standalone services. One is our Pubsub (https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) server, which allowed real-time messages and events to be sent between users in the same classroom. Another example is Looker (link), a third-party application that we connect directly to our database.
+The first step we made towards an SOA was a brainstorm session with three ALF engineers. First, we listed ALF's dependencies that were already considered standalone services. One is our [Pubsub](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) server, which allowed real-time messages and events to be sent between users in the same classroom. Another example is [Looker](https://looker.com/), a third-party application that we connect directly to our database.
 
-Then, we started breaking down feature seams of ALF that could (should) be similarly independent. In the front-end, for example, we have a set of dashboards that only faculty can view, displaying grades and other data for students in their sections, pages for section administration and changing enrollments, and pages for modifying individual classes. Many models and patterns are certainly shared conveniently between them, but those models (and assets and dependencies) become intertwined more tightly and unpredictably as we build more views that require different combinations of them. In the back-end, we might want monitoring and stats collections to be independent, as a sudden influx of events could (and have) degraded response times for general web requests. Emails and interfaces for third-party integrations like Google Docs are also suitable for abstraction, as we have various implementations throughout the codebase.
+Then, we started breaking down feature seams of ALF that could (should) be similarly independent. In the front-end, for example, we have a set of dashboards that only faculty can view, displaying grades and other data for students in their sections, pages for section administration and changing enrollments, and pages for modifying individual classes. Many models and patterns are certainly shared conveniently between them, but those models (and assets and dependencies) become intertwined more tightly and unpredictably as we build more views that require different combinations of them. In the back-end, we might want monitoring and stats collection and aggregation functionality to be independently executed, as a sudden influx of events could (and have) degraded response times for general web requests on the same shared server. Emails and interfaces for third-party integrations like Google Docs are also suitable for abstraction, as we have various implementations throughout the codebase.
 
 With this in mind, we wanted to experiment with building a templated base infrastructure for ALF services. For such a template to be useful, it necessarily has to share many of the technologies already used by ALF in `picasso`, and include features for a developer to easily and confidently start a production-ready service. We decided that, for an MVP, the stack would include the following:
 - Django 1.11 / Python 2.7
-    - Strong patterns for API endpoints, both reading and writing, as well as permissions, will be needed here. It's unclear whether DRF should be standard.
+    - Strong patterns for API endpoints, both reading and writing, as well as permissions, will be needed here. It's unclear whether DRF, [Django Rest Framework](http://www.django-rest-framework.org/), should be standard.
     - Roadmap: We may want to discuss making Python 3 the default.
-- Monitoring / Alerts
+- Monitoring and alerts
+    - Currently, only the built-in AWS monitoring is used.
 - Automated building, testing, and deployment
     - A CI/CD pattern seemed the most robust, particularly with
 - Simple local development environment setup
     - To meet this need, as well as uniform local/testing/deployment environments, we decided to use containerization with Docker to deterministically create images and isolate dependencies.
 
+
 ### Background learning
 
-To gain a foundational understanding of a service-oriented architecture, the author (Cheng, the primary engineer on the project), spent some time researching and learning high-level concepts. Two books, Building Microservices by Sam Newman, and Production-Ready Microservices by Susan J. Fowler, were invaluable. The usual online resources and documentation for Docker, Circle, and AWS were used as needed.
+To gain a foundational understanding of a service-oriented architecture, the author (Cheng, the primary engineer on the project), spent some time researching and learning high-level concepts. Two books, Building Microservices by Sam Newman, and Production-Ready Microservices by Susan J. Fowler, were invaluable. The usual online resources and documentation for Docker, Circle, and AWS were accessed when they were needed.
+
 
 ### Implementation details
 
@@ -33,17 +40,13 @@ To gain a foundational understanding of a service-oriented architecture, the aut
 
 ##### Docker
 
+`docker-compose.yml` specifies the containers needed for local development. Parallel to Circle's configuration, one Python container is built based on `Dockerfile`, with dependencies installed and caches locally. On start, `docker-entrypoint.sh` is used to activate `venv`, migrate, start a Celery worker in the background, and finally start the web server.
+
 ##### Django
 
 The Django installation is created in a folder named `application_service`, as in `scheduler_service`. A `static` folder is created for static assets. `settings.py` within a nested `application_service` contains the master configuration, and the built-in Django support for environment setting modules is used to set database configuration for Circle and local. URLs are indicated in `urls.py` as well.
 
 The application code itself is in a folder within, called `application`, as in `scheduler`. This application is registered with the Django installation, and its structure is mostly simple. `apps.py` is used to store some application-level configuration, `celery.py` currently only supports the local development environment's Redis, and `views.py` contain controller code. The `templates` folder contains view-level code, and `migrations` has migrations.
-
-Roadmap
-- [ ] Static asset deployment strategy.
-- [ ] Per-application URL routing.
-- [ ] Celery/Redis within applications.
-- [ ] API / login auth
 
 Roadmap:
 - [ ] Figure out Docker network optimization.
@@ -56,6 +59,8 @@ Roadmap:
 - [ ] Django Admin
 
 #### Test layer
+
+Circle 2.0 makes use of Docker containers, so one Python and one MySQL container is specified in `.circleci/config.yml`. Both containers cache dependencies based on changes to `requirements.in` for Django, and save them to `venv`. Then migrations are run on a fresh database, followed by unit tests. All of the dependency setup and entrypoint scripting is done within the Circle configuration file, which needs to be kept parallel with the local and production (if any) scripts.
 
 Roadmap:
 - [ ] Container for Celery/Redis to test scheduled/delayed tasks.
@@ -73,22 +78,22 @@ Roadmap
 - [ ] Some strategy for scaling.
 - [ ] Strategy for storing secrets.
 
-### Application 1
-
-### Application 2
 
 ### Future aspirations
 
+The
 
-script to clone and rename appropriate bits
+Roadmap
+- [ ] Static asset deployment strategy.
+- [ ] Per-application URL routing.
+- [ ] Celery/Redis within applications.
+- [ ] API / login auth
 
-script to automate AWS setup
-
-user service
-
+Finally, the packaging of the service could be automated significantly. We could write a script to clone the repository and rename appropriate strings such as service names. We could also write a script to automate AWS setup, the complex details of which can be found below.
 
 
 # Technical Details
+
 
 ## Local Development
 
@@ -112,14 +117,8 @@ source /venv/bin/activate
 DJANGO_SETTINGS_MODULE=scheduler_service.environments.local python scheduler_service/manage.py
 ```
 
-`docker-compose.yml` specifies the containers needed for local development. Parallel to Circle's configuration, one Python container is built based on `Dockerfile`, with dependencies installed and caches locally. On start, `docker-entrypoint.sh` is used to activate `venv`, migrate, start a Celery worker in the background, and finally start the web server.
-
 
 ## Testing on CircleCI
-
-Circle 2.0 makes use of Docker containers, so one Python and one MySQL container is specified in `.circleci/config.yml`. Both containers cache dependencies based on changes to `requirements.in` for Django, and save them to `venv`. Then migrations are run on a fresh database, followed by unit tests. All of the dependency setup and entrypoint scripting is done within the Circle configuration file, which needs to be kept parallel with the local and production (if any) scripts.
-
-### Adding project to CircleCI
 
 1. Go to CircleCI, click on "Projects" in the sidebar.
 2. Click "Add Projects".
