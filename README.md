@@ -152,19 +152,19 @@ AWS_DEFAULT_REGION  us-west-2         plaintext
 17. AWS Service Role: there should be a default one (AWS-CodePipeline-Service).
 18. Click Create pipeline.
 19. Setting up a deployment environment:
-  19.a. Go to Elastic Beanstalk, and click "Create new application" on the top right.
-  19.b. Create an environment for your new application.
-  19.c. Choose Web server environment.
-  19.d. Environment name example: "little_service-production", domain name example: "little_service".
-  19.e. Platform is "preconfigured platform", "Docker."
-  19.f. "Sample application" is fine.
-  19.g. Then do "Configure more options."
-  19.h. "Low cost" is fine.
-  19.i. Create environment.
-  19.j. You should be at All Applications > little_service > little_service-production. Wait a little bit for AWS to provision all the resources for you.
-  19.k. Now you should see a dashboard with an Environment ID and a URL. If you go to that URL, you should see a template AWS page.
-  19.l. Create an RDS instance separately, on the RDS dashboard.
-  19.m. Go back to AWS CodePipeline, and under Source and Build add stage "Deploy". Add an action with Action category "Deploy" and name "deploy". Deployment provider is Elastic Beanstalk. Choose your service from the dropdowns. Input artifacts can be default "MyAppBuild." Add action, save pipeline.
+19.a. Go to Elastic Beanstalk, and click "Create new application" on the top right.
+19.b. Create an environment for your new application.
+19.c. Choose Web server environment.
+19.d. Environment name example: "little_service-production", domain name example: "little_service".
+19.e. Platform is "preconfigured platform", "Docker."
+19.f. "Sample application" is fine.
+19.g. Then do "Configure more options."
+19.h. "Low cost" is fine.
+19.i. Create environment.
+19.j. You should be at All Applications > little_service > little_service-production. Wait a little bit for AWS to provision all the resources for you.
+19.k. Now you should see a dashboard with an Environment ID and a URL. If you go to that URL, you should see a template AWS page.
+19.l. Create an RDS instance separately, on the RDS dashboard.
+19.m. Go back to AWS CodePipeline, and under Source and Build add stage "Deploy". Add an action with Action category "Deploy" and name "deploy". Deployment provider is Elastic Beanstalk. Choose your service from the dropdowns. Input artifacts can be default "MyAppBuild." Add action, save pipeline.
 20. To test it, click "Release Change." If you want to look at the progress, you can go to CodeBuild and select your project. And then click on the project under Build Run.)
 
 ### Troubleshooting
