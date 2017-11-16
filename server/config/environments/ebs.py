@@ -1,4 +1,4 @@
-from little_service.settings import *
+from config.settings import *
 
 DATABASES = {
     'default': {

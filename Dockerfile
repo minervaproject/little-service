@@ -1,7 +1,7 @@
 FROM python:2
-RUN mkdir /little_service
-WORKDIR /little_service
-ADD requirements.in /little_service
+RUN mkdir /server
+WORKDIR /server
+ADD requirements.in /server
 RUN /bin/bash -c 'virtualenv /venv  && \
     source /venv/bin/activate  && \
     echo "Installing dependencies..."  && \
@@ -11,5 +11,5 @@ RUN /bin/bash -c 'virtualenv /venv  && \
 
 EXPOSE 80
 
-ADD . /little_service
+ADD . /server
 ENTRYPOINT ["./docker-entrypoint.sh"]

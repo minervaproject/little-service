@@ -22,9 +22,9 @@ With this in mind, we wanted to experiment with building a templated base infras
     - Strong patterns for API endpoints, both reading and writing, as well as permissions, will be needed here. It's unclear whether DRF, [Django Rest Framework](http://www.django-rest-framework.org/), should be standard.
     - Roadmap: We may want to discuss making Python 3 the default.
 - Monitoring and alerts
-    - Currently, only the built-in AWS monitoring is used.
+    - Currently, only the built-in AWS monitoring is implemented.
 - Automated building, testing, and deployment
-    - A CI/CD pattern seemed the most robust, particularly with
+    - A CI/CD pattern seemed the most robust, particularly with the deployment abstraction EBS provides, and the automatic hooks from CodePipeline.
 - Simple local development environment setup
     - To meet this need, as well as uniform local/testing/deployment environments, we decided to use containerization with Docker to deterministically create images and isolate dependencies.
 
@@ -40,56 +40,50 @@ To gain a foundational understanding of a service-oriented architecture, the aut
 
 ##### Docker
 
-`docker-compose.yml` specifies the containers needed for local development. Parallel to Circle's configuration, one Python container is built based on `Dockerfile`, with dependencies installed and caches locally. On start, `docker-entrypoint.sh` is used to activate `venv`, migrate, start a Celery worker in the background, and finally start the web server.
+Developers install native Docker for their operating system, which runs as a service in the background.  `docker-compose.yml` specifies the containers needed for local development, and currently only one Python container is needed. This container is described by `Dockerfile`, which specifies dependency installation and caches locally for each additional layer of dependencies. On start, `docker-entrypoint.sh` is used to activate Python's `venv`, run any Django migrations, start a Celery worker in the background for asynchronous tasks (a native Redis is used for this), and finally start the web server worker.
 
 ##### Django
 
-The Django installation is created in a folder named `application_service`, as in `scheduler_service`. A `static` folder is created for static assets. `settings.py` within a nested `application_service` contains the master configuration, and the built-in Django support for environment setting modules is used to set database configuration for Circle and local. URLs are indicated in `urls.py` as well.
+By convention from Seminar, the Django installation is created in a folder named `server`. A `static` folder is created for static assets. `settings.py` within `config` contains the master configuration, and the built-in Django support for environment setting modules is used to set database configuration for Circle and local environments. URLs are indicated in `urls.py` as well.
 
-The application code itself is in a folder within, called `application`, as in `scheduler`. This application is registered with the Django installation, and its structure is mostly simple. `apps.py` is used to store some application-level configuration, `celery.py` currently only supports the local development environment's Redis, and `views.py` contain controller code. The `templates` folder contains view-level code, and `migrations` has migrations.
+The application code itself is in another folder, called `little_service_app`. This application is registered with the Django installation, and its structure follows Django conventions. `apps.py` is used to store some application-level configuration, `celery.py` currently only supports the local development environment's Redis, and `views.py` contains controller code. The `templates` folder contains view-level code, and `migrations` has migrations. No default front-end has been added yet, so built-in Django templating is used.
 
 Roadmap:
-- [ ] Figure out Docker network optimization.
-- [ ] Separate file location for persistent MySQL database.
-- [ ] Shell features and parity with picasso.
+- [ ] Figure out Docker network optimization, with a container for MySQL for local development.
+- [ ] Separate file location for persistent MySQL database for local development.
+- [ ] Shell features, both at the container and application level.
 - [ ] Container for Celery/Redis.
-- [ ] Smarter healthcheck to wait for database readiness.
-- [ ] Integration tests.
-- [ ] Figure out Unicode support for database.
-- [ ] Django Admin
+- [ ] Smarter healthcheck to wait for database readiness on start.
+- [ ] Front-end / integration tests.
+- [ ] Unicode support by default for database.
+- [ ] Django Admin.
 
 #### Test layer
 
-Circle 2.0 makes use of Docker containers, so one Python and one MySQL container is specified in `.circleci/config.yml`. Both containers cache dependencies based on changes to `requirements.in` for Django, and save them to `venv`. Then migrations are run on a fresh database, followed by unit tests. All of the dependency setup and entrypoint scripting is done within the Circle configuration file, which needs to be kept parallel with the local and production (if any) scripts.
+Circle 2.0 makes use of Docker containers, so one Python and one MySQL container is specified in `.circleci/config.yml`. Both containers cache dependencies based on changes to `requirements.in` for Django, and save them to `venv`. Then migrations are run on a fresh database, followed by unit tests. All of the dependency setup and entrypoint scripting is done within the Circle configuration file, which needs to be kept parallel with the local and production Dockerfiles.
 
 Roadmap:
-- [ ] Container for Celery/Redis to test scheduled/delayed tasks.
+- [ ] Container for Celery/Redis, tests.
 - [ ] Smarter healthcheck to wait for database readiness.
 - [ ] Test artifacts/reporting.
 - [ ] Integration tests.
 
 #### Deployment layer
 
-The build process uses Amazon CodeBuild, which takes the specs in `buildspec.yml` and builds a single web server Docker image and registers it with Amazon ElasticContainerRegistry. In the future, we may want some kind of multi-container configuration.
+The build process uses Amazon CodeBuild, which takes the specs in `buildspec.yml` and builds a single web server Docker image and uploads it to Amazon ElasticContainerRegistry. Then, CodePipeline takes that build and deploys it with ElasticBeanstalk.
 
 Roadmap
-- [ ] Production environment with MySQL, Redis, Celery workers.
+- [ ] Container for Celery/Redis.
 - [ ] Deployment scripts.
 - [ ] Some strategy for scaling.
 - [ ] Strategy for storing secrets.
+- [ ] Static asset deployment strategy.
+- [ ] API / login auth / general security.
 
 
 ### Future aspirations
 
-The
-
-Roadmap
-- [ ] Static asset deployment strategy.
-- [ ] Per-application URL routing.
-- [ ] Celery/Redis within applications.
-- [ ] API / login auth
-
-Finally, the packaging of the service could be automated significantly. We could write a script to clone the repository and rename appropriate strings such as service names. We could also write a script to automate AWS setup, the complex details of which can be found below.
+Finally, the overall cloning of the service could be automated significantly. We could write a script to copy files from the repository and rename appropriate strings such as service names. We could also write a script to automate AWS setup, the complex details of which can be found below.
 
 
 # Technical Details
@@ -106,7 +100,7 @@ Quick Start:
 ```
 docker-compose build && docker-compose run --service-ports web
 ```
-5. Go to http://127.0.0.1:90/ - You should see the number under "Hello, World" increment with every refresh.
+5. Go to http://127.0.0.1:88/ - You should see the number under "Hello, World" increment with every refresh.
 
 Code changes will automatically trigger Django's server restart.
 
