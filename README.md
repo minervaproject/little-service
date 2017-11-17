@@ -31,7 +31,7 @@ With this in mind, we wanted to experiment with building a templated base infras
 
 ### Background learning
 
-To gain a foundational understanding of a service-oriented architecture, the author (Cheng, the primary engineer on the project), spent some time researching and learning high-level concepts. Two books, Building Microservices by Sam Newman, and Production-Ready Microservices by Susan J. Fowler, were invaluable. The usual online resources and documentation for Docker, Circle, and AWS were accessed when they were needed.
+To gain a foundational understanding of a service-oriented architecture, the author (Cheng, the primary engineer on the project), spent some time researching and learning high-level concepts. Two books, [Building Microservices by Sam Newman](http://samnewman.io/books/building_microservices/), and [Production-Ready Microservices](http://shop.oreilly.com/product/0636920053675.do) by Susan J. Fowler, were invaluable. The usual online resources and documentation for Docker, Circle, and AWS were accessed when they were needed.
 
 
 ### Implementation details
@@ -174,3 +174,8 @@ AWS_DEFAULT_REGION  us-west-2         plaintext
 Go to IAM, and find your role under Roles (for us, this is code-build-little_service-service-role). Under "Attach Policy", check "AmazonEC2ContainerRegistryPowerUser" and add it.
 
 Note: Retrying builds from the CodeBuild dashboard does not work. Do "Release change" from CodePipeline to ensure that all steps run.
+
+## Teardown from AWS (Costly items only)
+
+1. Delete the Application from Elastic Beanstalk.
+2. Delete images from EC2 Container Service.
