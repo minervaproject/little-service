@@ -1,3 +1,5 @@
+Discussion: https://docs.google.com/document/d/1wVIxxvxMuhZVlex0YAVicVLE4l_RvGnYavccD4Nml10/edit
+
 # Building a Reusable Little Service
 ## Django/Celery on Docker, CodePipeline, Elastic Beanstalk, with an RDS database.
 
