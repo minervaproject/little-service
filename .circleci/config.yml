@@ -34,7 +34,7 @@ jobs:
             # TODO: Use dockerize or similar to wait for DB readiness.
             sleep 5
             DJANGO_SETTINGS_MODULE=config.environments.ci python server/manage.py migrate
-            DJANGO_SETTINGS_MODULE=config.environments.ci python server/manage.py test scheduler
+            DJANGO_SETTINGS_MODULE=config.environments.ci python server/manage.py test little_service_app
       - store_artifacts:
           path: test-reports/
           destination: tr1
