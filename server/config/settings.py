@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'little_service_app.apps.ServiceConfig',
+    'service.apps.ServiceConfig',
     'django_extensions',
 ]
 

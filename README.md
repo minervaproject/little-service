@@ -44,7 +44,7 @@ Code changes will automatically trigger Django's server restart.
 
 Attach to a running web server:
 ```
-docker exec -it scheduler_web_1 bash
+sudo docker exec -it $(sudo docker ps -q) bash
 source /venv/bin/activate
 DJANGO_SETTINGS_MODULE=config.environments.local python server/manage.py
 ```
@@ -61,15 +61,18 @@ DJANGO_SETTINGS_MODULE=config.environments.local python server/manage.py
 
 ## Building and Deploying on AWS
 
+
 ### RDS
 1. Create an RDS instance, on the RDS dashboard. Add credentials to `config/environments/ebs.py`.
 2. The database needs a security group that allows traffic in and out, if it's in a VPC.
+
 
 ### Elastic Container Service
 1. Go to EC2 Container service.
 2. Click "Create repository" button. Name your repo the name of your project.
 3. Click done.
 4. Now you should see the repo ARN and URI. This is where the Docker images go. The URI will look something like this: `###########.dkr.ecr.us-west-2.amazonaws.com/stats-service`.
+
 
 ### CodePipeline
 1. Go to AWS CodePipeline, and click "Create pipeline".
@@ -94,6 +97,7 @@ AWS_DEFAULT_REGION  us-west-2         plaintext
 13. Click Create pipeline.
 14. Go to IAM, and find the role from step 8 in Roles. Under "Attach Policy", check "AmazonEC2ContainerRegistryPowerUser" and add it.
 
+
 ### Elastic Beanstalk
 1. Go to Elastic Beanstalk, and click "Create new application" on the top right.
 2. Create an environment for your new application.
@@ -108,6 +112,17 @@ AWS_DEFAULT_REGION  us-west-2         plaintext
 11. Now you should see a dashboard with an Environment ID and a URL. If you go to that URL, you should see a template AWS page.
 12. Go back to AWS CodePipeline, and under Source and Build add stage "Deploy". Add an action with Action category "Deploy" and name "deploy". Deployment provider is Elastic Beanstalk. Choose your service from the dropdowns. Input artifacts can be default "MyAppBuild." Add action, save pipeline.
 13. To test it, click "Release Change." If you want to look at the progress, you can go to CodeBuild and select your project. And then click on the project under Build Run.
+
+
+### Temporary HTTPS certificate
+1. Use https://letsencrypt.org/ as the CA.
+2. `wget https://dl.eff.org/certbot-auto`
+3. `chmod +x certbot-auto`
+4. `./certbot-auto --no-bootstrap certonly`
+5. Use option 2, "Spin up a temporary webserver (standalone)", and input the service's domain name.
+6. `sudo aws s3 cp /etc/letsencrypt/live/little-service.us-west-2.elasticbeanstalk.com/fullchain.pem s3://service-keys/little-service/`
+7. `sudo aws s3 cp /etc/letsencrypt/live/little-service.us-west-2.elasticbeanstalk.com/privkey.pem s3://service-keys/little-service/`
+8. Redeploy from CodePipeline, and it should work.
 
 
 ## Teardown from AWS (Costly items only)
