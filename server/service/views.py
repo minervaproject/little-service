@@ -5,6 +5,7 @@ import json
 from celery import shared_task
 from django.http import HttpResponse
 from django.views.generic import TemplateView
+from service.models import Banner
 from service.models import Counter
 
 
@@ -12,12 +13,23 @@ class IndexView(TemplateView):
     template_name = "indexview.html"
 
     def get_context_data(self, **kwargs):
+
         counter = Counter.objects.last()
         if not counter:
             counter = Counter.objects.create()
         counter.count += 1
         counter.save()
-        return { "count": counter.count }
+
+        banner = Banner.objects.last()
+        if not banner:
+            banner = Banner.objects.create(
+                text="✨ Hello, world ✨")
+            banner.save()
+
+        return {
+            "count": counter.count,
+            "text": banner.text,
+        }
 
 
 # TODO: TEST CELERY

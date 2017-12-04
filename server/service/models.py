@@ -14,3 +14,7 @@ class BaseModel(models.Model):
 
 class Counter(BaseModel):
     count = models.IntegerField(default=0)
+
+
+class Banner(BaseModel):
+    text = models.TextField()

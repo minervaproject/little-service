@@ -22,10 +22,7 @@ Deployment
 
 Roadmap
 - [ ] Container for Celery/Redis.
-- [ ] Deployment scripts.
 - [ ] Some strategy for scaling.
-- [ ] Strategy for storing secrets.
-- [ ] Static asset deployment strategy.
 - [ ] API / login auth / general security.
 
 ## Local Development
