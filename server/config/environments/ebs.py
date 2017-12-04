@@ -13,4 +13,6 @@ DATABASES = {
 
 ALLOWED_HOSTS = ['little-service.us-west-2.elasticbeanstalk.com']
 
-DEBUG = True
+STATIC_URL = 'https://s3-us-west-2.amazonaws.com/service-static/little-service/'
+
+DEBUG = False

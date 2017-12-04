@@ -5,7 +5,7 @@ import json
 from celery import shared_task
 from django.http import HttpResponse
 from django.views.generic import TemplateView
-from little_service_app.models import Counter
+from service.models import Counter
 
 
 class IndexView(TemplateView):

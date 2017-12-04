@@ -3,12 +3,12 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - echo Logging in to Amazon ECR...
+      - echo Logging in to Amazon ECR ...
       - $(aws ecr get-login --region $AWS_DEFAULT_REGION)
   build:
     commands:
       - echo Build started on `date`
-      - echo Building the Docker image...
+      - echo Building the Docker image ...
       - ls -al
       - chmod +x docker-entrypoint.sh
       - docker build -t $IMAGE_REPO_NAME:latest .
@@ -16,8 +16,11 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
-      - echo Pushing the Docker image...
+      - echo Pushing the Docker image ...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - echo Uploading server/static to s3://service-static/$IMAGE_REPO_NAME/ ...
+      - aws s3 sync server/static/ s3://service-static/$IMAGE_REPO_NAME/ --acl public-read
 artifacts:
   files:
     - 'Dockerrun.aws.json'
+    - '.ebextensions/*'

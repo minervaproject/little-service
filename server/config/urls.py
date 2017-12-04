@@ -1,4 +1,4 @@
-from little_service_app.views import IndexView
+from service.views import IndexView
 from django.conf.urls import url
 from django.contrib import admin
 

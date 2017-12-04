@@ -9,7 +9,7 @@ echo -e "Calling DJANGO_SETTINGS_MODULE=config.environments.local python server/
 DJANGO_SETTINGS_MODULE=config.environments.local python server/manage.py migrate
 
 echo -e "Starting Celery ..."
-cd server; celery -A little_service_app worker -l info &
+cd server; celery -A service worker -l info &
 cd ..
 
 echo -e "Calling DJANGO_SETTINGS_MODULE=config.environments.local python server/manage.py runserver 0:80 ..."

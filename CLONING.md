@@ -9,6 +9,7 @@ but we need a more sustainable way to pull the base service files.
 3. The following renames need to be automated, but will be noted here for now:
 ```
 .circleci/config.yml: working_directory: little_service -> stats-service
+.ebextensions: server_name stats-service.us-west-2.elasticbeanstalk.com; certificate URLs
 server/config/environments/ebs.py: database host, name, user, password, ALLOWED_HOSTS
 server/config/environments/local.py: database name
 Dockerrun.aws.json: Image Name -> stats-service
