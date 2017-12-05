@@ -122,6 +122,14 @@ AWS_DEFAULT_REGION  us-west-2         plaintext
 8. Redeploy from CodePipeline, and it should work.
 
 
+### Secrets (Only if you need to update them for the EBS environment)
+
+1. To acquire: `aws s3 cp s3://service-keys/little-service/ebs_secrets.py server/config/secrets/ebs_secrets.py`.
+2. To update: `aws s3 cp server/config/secrets/ebs_secrets.py s3://service-keys/little-service/ebs_secrets.py`.
+
+This is automatically pulled in by CodeBuild when building the container.
+
+
 ## Teardown from AWS (Costly items only)
 
 1. Delete the Application from Elastic Beanstalk.
