@@ -9,6 +9,8 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image ...
+      - echo Pulling in ebs_secrets.py from s3://service-keys/$IMAGE_REPO_NAME ...
+      - aws s3 cp s3://service-keys/$IMAGE_REPO_NAME/ebs_secrets.py server/config/secrets/ebs_secrets.py
       - ls -al
       - chmod +x docker-entrypoint.sh
       - docker build -t $IMAGE_REPO_NAME:latest .
