@@ -1,4 +1,5 @@
 from config.settings import *
+from config.secrets.ebs_secrets import *
 
 ALLOWED_HOSTS = ['little-service.us-west-2.elasticbeanstalk.com']
 
