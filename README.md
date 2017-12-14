@@ -7,6 +7,8 @@
 - Identical development, testing, and production environments
 - Built with rapid iteration, flexibility, and extensibility in mind
 
+A longer description of the motivation is available [here](https://minervaproject.github.io/2017/11/16/building-a-reusable-little-service-django-celery-docker-codepipeline-elastic-beanstalk-rds-database/).
+
 ### Roadmap
 
 - [ ] Figure out Docker network optimization, with a container for MySQL for local development.
@@ -28,7 +30,7 @@
 ```
 make
 ```
-3. Go to http://127.0.0.1:88/ - You should see the number under "Hello, World" increment with every refresh.
+3. Go to [http://127.0.0.1:88/](http://127.0.0.1:88/) - You should see the number under "Hello, World" increment with every refresh.
 
 Code changes will automatically trigger Django's server restart.
 
