@@ -99,5 +99,4 @@ ENV/
 
 # mypy
 .mypy_cache/
-
-little_service/secrets/
+.idea/

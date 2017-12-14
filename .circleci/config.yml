@@ -16,10 +16,18 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            echo "Creating virtualenv..."
+            echo "Installing Redis ..."
+            groupadd -r redis && useradd -r -g redis redis
+            curl -O http://download.redis.io/redis-stable.tar.gz
+            tar xzvf redis-stable.tar.gz
+            cd redis-stable
+            make
+            make install
+            cd ..
+            echo "Creating virtualenv ..."
             virtualenv venv
             source venv/bin/activate
-            echo "Installing dependencies..."
+            echo "Installing dependencies ..."
             pip install pip-tools
             pip-compile --output-file requirements.txt requirements.in
             pip-sync requirements.txt
@@ -33,8 +41,13 @@ jobs:
             source venv/bin/activate
             # TODO: Use dockerize or similar to wait for DB readiness.
             sleep 5
-            DJANGO_SETTINGS_MODULE=config.environments.ci python server/manage.py migrate
-            DJANGO_SETTINGS_MODULE=config.environments.ci python server/manage.py test service
+            redis-server &
+            export DJANGO_SETTINGS_MODULE=config.environments.ci
+            cd server
+            celery -A service worker -l info &
+            cd ..
+            python server/manage.py migrate
+            python server/manage.py test service
       - store_artifacts:
           path: test-reports/
           destination: tr1

@@ -27,25 +27,27 @@ Roadmap
 
 ## Local Development
 
-Quick Start:
+### Quick Start
 
-1. Create a local MySQL database: `mysqladmin -u root create stats-service-db`.
-2. If you don't already have Redis, install Redis, and update `celery.py` accordingly.
-3. Build the web server and run it locally:
+1. Create a local MySQL database: `mysqladmin -u root create little-service-db`.
+2. Build the web server and run it locally:
 ```
-docker-compose build && docker-compose run --service-ports web
+make
 ```
-4. Go to http://127.0.0.1:88/ - You should see the number under "Hello, World" increment with every refresh.
+3. Go to http://127.0.0.1:88/ - You should see the number under "Hello, World" increment with every refresh.
 
 Code changes will automatically trigger Django's server restart.
 
-Attach to a running web server:
+### Attach to a running web server:
 ```
-sudo docker exec -it $(sudo docker ps -q) bash
-source /venv/bin/activate
-DJANGO_SETTINGS_MODULE=config.environments.local python server/manage.py
+docker exec -it $(docker ps -q) bash
 ```
 
+### Attach to a running web server in production:
+```
+ssh -i ~/.ssh/production.pem ec2-user@
+source attach
+```
 
 ## Testing on CircleCI
 
