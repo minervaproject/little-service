@@ -1,28 +1,22 @@
-Django
+### Description 
 
-Roadmap:
+`little-service` is a single Docker container with everything needed for quick cloning and deployment to EBS, including:
+- Django on Python, with support for MySQL connections
+- Celery/Redis
+- Support for HTTPS and secrets
+- Identical development, testing, and production environments
+- Built with rapid iteration, flexibility, and extensibility in mind
+
+### Roadmap
+
 - [ ] Figure out Docker network optimization, with a container for MySQL for local development.
 - [ ] Separate file location for persistent MySQL database for local development.
 - [ ] Shell features, both at the container and application level.
-- [ ] Container for Celery/Redis.
 - [ ] Smarter healthcheck to wait for database readiness on start.
 - [ ] Front-end / integration tests.
-- [ ] Unicode support by default for database.
 - [ ] Django Admin.
-
-Circle
-
-Roadmap:
-- [ ] Container for Celery/Redis, tests.
-- [ ] Smarter healthcheck to wait for database readiness.
 - [ ] Test artifacts/reporting.
 - [ ] Integration tests.
-
-Deployment
-
-Roadmap
-- [ ] Container for Celery/Redis.
-- [ ] Some strategy for scaling.
 - [ ] API / login auth / general security.
 
 ## Local Development
@@ -64,6 +58,7 @@ source attach
 ### RDS
 1. Create an RDS instance, on the RDS dashboard. Add credentials to `config/environments/ebs.py`.
 2. The database needs a security group that allows traffic in and out, if it's in a VPC.
+3. There are also steps needed to make the RDS utf8mb4 to support Unicode, with instructions to be written.
 
 
 ### Elastic Container Service
