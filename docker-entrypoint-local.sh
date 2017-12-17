@@ -33,9 +33,6 @@ echo
 echo "Starting Celery:"
 cd server
 celery -A service worker -l info &
-celery -A service worker -l info &
-celery -A service worker -l info &
-celery -A service worker -l info &
 cd ..
 echo
 
