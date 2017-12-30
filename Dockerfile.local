@@ -1,7 +1,6 @@
 FROM python:2
 RUN mkdir /server
 WORKDIR /server
-ADD requirements.in /server
 RUN apt-get update && \
     apt-get -y install mysql-client vim
 
@@ -14,6 +13,8 @@ RUN apt-get -y install build-essential tcl
 RUN /bin/bash -c 'curl -O http://download.redis.io/redis-stable.tar.gz && \
 	tar xzvf redis-stable.tar.gz && \
 	cd redis-stable && make && make install'
+
+ADD requirements.in /server
 
 RUN /bin/bash -c 'virtualenv /venv  && \
     source /venv/bin/activate  && \

@@ -16,6 +16,12 @@ echo "*"
 echo -n "* "
 cat service-name.conf
 echo "*"
+echo "* Last commit:"
+echo "*"
+echo
+cat last-commit.conf
+echo
+echo "*"
 echo "****************"
 echo
 
