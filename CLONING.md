@@ -15,5 +15,18 @@ server/config/environments/local.py: database name
 Dockerrun.aws.json: Image Name -> stats-service
 ```
 4. Create a local MySQL database: `mysqladmin -u root create stats-service-db`.
-5. Start the web/local celery container with `docker-compose build && docker-compose run --service-ports web`.
-6. Visit http://127.0.0.1:88/
+5. Create a file in `server/config/secrets/` named `local_secrets.py` with contents like the following:
+```
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'docker.for.mac.localhost',
+        'PORT': '3306',
+        'NAME': 'stats-service-db',
+        'USER': 'root',
+        'PASSWORD': '',
+    }
+}
+```
+6. Start the web/local celery container with `make`.
+7. Visit http://127.0.0.1:88/
